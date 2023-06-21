@@ -2,7 +2,7 @@
 
 | **`Windows`** | **`Linux(x86)`** |
 |:-----------------:|:-----------------:|
-[![Build status](https://ci.appveyor.com/api/projects/status/j9q4qmq166t0svwl/branch/develop?svg=true)](https://ci.appveyor.com/project/rokoDev/cargo/branch/develop)|[![CircleCI](https://dl.circleci.com/status-badge/img/gh/rokoDev/cargo/tree/develop.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/rokoDev/cargo/tree/develop)|
+[![Build status](https://ci.appveyor.com/api/projects/status/0qo3sul2tlvnpm6f/branch/develop?svg=true)](https://ci.appveyor.com/project/rokoDev/cargo/branch/develop)|[![CircleCI](https://dl.circleci.com/status-badge/img/gh/rokoDev/cargo/tree/develop.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/rokoDev/cargo/tree/develop)|
 
 # cargo
 
