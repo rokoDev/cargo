@@ -9,6 +9,7 @@
 #include <cstring>
 #include <functional>
 #include <iterator>
+#include <new>
 #include <string_view>
 
 namespace cargo
