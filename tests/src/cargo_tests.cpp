@@ -179,7 +179,8 @@ class Element : public SharedSpecialOps
         return true;
     }
 };
-
+using NoThrow =
+    Element<Dector, Ctor, CopyCtor, MoveCtor, CopyAssign, MoveAssign>;
 using NoThrowCopyCtor = Element<Dector, CopyCtor>;
 using NoThrowMoveCtor = Element<Dector, MoveCtor>;
 using NoThrowCtorAndCopyAssign = Element<Dector, Ctor, CopyAssign>;
@@ -944,6 +945,69 @@ TEST_F(Payload64, LoadNullCStr)
     ASSERT_TRUE(cit->match<cseq_t>());
     ASSERT_EQ(cit->get<cseq_t>().size(), 0);
     ASSERT_EQ(cit->get<cseq_t>().data(), nullptr);
+}
+
+TEST_F(Payload64, MoveConstructor)
+{
+    int v = 5;
+    int *p = &v;
+    data.load(p);
+
+    using cchar_seq_t = seq<const char, std::uint8_t>;
+    char const *str = "Hello";
+    data.load(cchar_seq_t(str));
+
+    payload moved(std::move(data));
+
+    ASSERT_EQ(data.data(), nullptr);
+    ASSERT_EQ(data.capacity(), 0);
+    ASSERT_EQ(data.size(), 0);
+    ASSERT_EQ(data.space_used(), 0);
+    ASSERT_EQ(data.space_shortage(), 0);
+
+    ASSERT_TRUE((moved.match<int *, cchar_seq_t>()));
+
+    auto it = moved.begin();
+    ASSERT_EQ(it->get<int *>(), p);
+
+    ++it;
+    ASSERT_EQ(it->get<cchar_seq_t>(), cchar_seq_t("Hello"));
+}
+
+TEST_F(FixturePayload64, MoveAssignment)
+{
+    InSequence seq;
+    EXPECT_CALL(*value_, default_constructor()).Times(1);
+    EXPECT_CALL(*value_, move_constructor()).Times(1);
+    EXPECT_CALL(*value_, destructor()).Times(2);
+
+    int v = 5;
+    int *p = &v;
+    data.load(p);
+
+    using cchar_seq_t = cargo::seq<const char, std::uint8_t>;
+    char const *str = "Hello";
+    data.load(cchar_seq_t(str));
+
+    char raw_data[32]{};
+    payload move_assigned(raw_data);
+    move_assigned.load(NoThrow{});
+
+    move_assigned = std::move(data);
+
+    ASSERT_EQ(data.data(), nullptr);
+    ASSERT_EQ(data.capacity(), 0);
+    ASSERT_EQ(data.size(), 0);
+    ASSERT_EQ(data.space_used(), 0);
+    ASSERT_EQ(data.space_shortage(), 0);
+
+    ASSERT_TRUE((move_assigned.match<int *, cchar_seq_t>()));
+
+    auto it = move_assigned.begin();
+    ASSERT_EQ(it->get<int *>(), p);
+
+    ++it;
+    ASSERT_EQ(it->get<cchar_seq_t>(), cchar_seq_t("Hello"));
 }
 
 TEST_F(FixturePayload64, AddNoThrowCopyCtorAsLValueRef)

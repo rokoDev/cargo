@@ -948,6 +948,41 @@ class payload
 
     ~payload() { reset(); }
 
+    constexpr payload(payload &&aOther) noexcept
+        : data_{aOther.data_}
+        , capacity_{aOther.capacity_}
+        , size_{aOther.size_}
+        , space_used_{aOther.space_used_}
+        , space_shortage_{aOther.space_shortage_}
+    {
+        aOther.data_ = nullptr;
+        aOther.capacity_ = 0;
+        aOther.size_ = 0;
+        aOther.space_used_ = 0;
+        aOther.space_shortage_ = 0;
+    }
+
+    payload &operator=(payload &&aOther) noexcept
+    {
+        if (this != &aOther)
+        {
+            this->reset();
+
+            data_ = aOther.data_;
+            capacity_ = aOther.capacity_;
+            size_ = aOther.size_;
+            space_used_ = aOther.space_used_;
+            space_shortage_ = aOther.space_shortage_;
+
+            aOther.data_ = nullptr;
+            aOther.capacity_ = 0;
+            aOther.size_ = 0;
+            aOther.space_used_ = 0;
+            aOther.space_shortage_ = 0;
+        }
+        return *this;
+    }
+
     constexpr payload(char *aStorage, std::size_t aCapacity) noexcept
         : data_{aStorage}, capacity_{aCapacity}
     {
@@ -1070,8 +1105,7 @@ class payload
 
    private:
     char *data_{nullptr};
-    const std::size_t capacity_{};
-
+    std::size_t capacity_{};
     std::size_t size_{};
     std::size_t space_used_{};
     std::size_t space_shortage_{};
